@@ -81,7 +81,7 @@ def main(input_file):
 if __name__ == '__main__':
     input_file = 'input.csv'  # Replace with the path to your input CSV file
     '''
-    required fields in csv (CASE SENSITOVE):
+    required fields in csv (CASE SENSITIVE):
     'Subject',
     'Start Date',
     'Start Time',

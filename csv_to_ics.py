@@ -10,6 +10,7 @@ import csv
 import os
 from datetime import datetime
 from ics import Calendar, Event
+import pytz
 
 def read_csv_file(file_path):
     events = []
@@ -53,13 +54,23 @@ def convert_to_ics_file(events, file_path):
     for event in events:
         e = Event()
         e.name = event['Subject']
-        start_datetime = datetime.strptime(event['Start Date'] + event['Start Time'], '%m/%d/%y%I:%M:%S %p')
+        # Get the timezone from the event data
+        tzid = event.get('TZID', 'Europe/Amsterdam')  # Default to Europe/Amsterdam if not provided
+        try:
+            tz = pytz.timezone(tzid)
+        except pytz.UnknownTimeZoneError:
+            print(f"Warning: Unknown timezone '{tzid}'. Using 'Europe/Amsterdam' instead.")
+            tz = pytz.timezone('Europe/Amsterdam')
         print(e.name)
-        print(start_datetime)
-        e.begin = start_datetime.strftime('%Y-%m-%dT%H:%M:%S')
-        end_datetime = datetime.strptime(event['End Date'] + event['End Time'], '%m/%d/%y%I:%M:%S %p')
-        print(end_datetime)
-        e.end = end_datetime.strftime('%Y-%m-%dT%H:%M:%S')
+        # Parse Start Date/Time with timezone
+        start_datetime_str = event['Start Date'] + ' ' + event['Start Time']
+        start_datetime = datetime.strptime(start_datetime_str, '%d-%m-%y %H:%M').replace(tzinfo=tz)
+        e.begin = start_datetime
+
+        # Parse End Date/Time with timezone (same format as start)
+        end_datetime_str = event['End Date'] + ' ' + event['End Time']
+        end_datetime = datetime.strptime(end_datetime_str, '%d-%m-%y %H:%M').replace(tzinfo=tz)
+        e.end = end_datetime
         e.description = event['Description']
         e.location = event['Location']
         e.uid = event['UID']
@@ -79,7 +90,7 @@ def main(input_file):
         convert_to_ics_file(events, ics_file)
 
 if __name__ == '__main__':
-    input_file = 'input.csv'  # Replace with the path to your input CSV file
+    input_file = 'minor2425V1.csv'  # Replace with the path to your input CSV file
     '''
     required fields in csv (CASE SENSITIVE):
     'Subject',
@@ -94,4 +105,3 @@ if __name__ == '__main__':
     'Categories'
     '''
     main(input_file)
-

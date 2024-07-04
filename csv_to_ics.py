@@ -103,5 +103,10 @@ if __name__ == '__main__':
     'Location',
     'UID',
     'Categories'
+    'TZID'
     '''
     main(input_file)
+
+# Subject	             Start Date	    Start Time	    End Date	End Time	All Day	    Description	    Location	UID	        Categories	    TZID
+# Intro constructie	     02-09-24	    11:00	        02-09-24	13:00	    FALSE	    harps	        ID.1.521	INTRO1	    constructie	    Europe/Amsterdam
+
